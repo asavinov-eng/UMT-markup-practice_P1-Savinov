@@ -6,7 +6,8 @@ const mobileMenu = document.querySelector('[data-menu]');
 const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
 const featuredList = document.querySelector('.top-selling .product-list');
 const bouquetList = document.querySelector('.bouquets .product-list');
-const loadMoreButton = document.querySelector('.bouquets .button');
+const previousBouquetsButton = document.querySelector('[data-bouquet-prev]');
+const nextBouquetsButton = document.querySelector('[data-bouquet-next]');
 const orderModal = document.querySelector('[data-order-modal]');
 const orderOpenButtons = document.querySelectorAll('[data-order-open]');
 const orderCloseButton = document.querySelector('[data-order-close]');
@@ -17,7 +18,7 @@ const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
 const products = new Map();
 
-const state = { page: 1, limit: 4, total: 0 };
+const state = { page: 1, limit: 3, total: 0 };
 
 function toggleMenu() {
   const isOpen = mobileMenu.classList.toggle('is-open');
@@ -60,14 +61,10 @@ async function loadFeatured() {
   }
 }
 
-async function loadBouquets(reset = false) {
-  if (reset) {
-    state.page = 1;
-    bouquetList.innerHTML = '';
-  }
-
-  loadMoreButton.disabled = true;
-  loadMoreButton.textContent = 'Loading...';
+async function loadBouquets() {
+  bouquetList.innerHTML = '';
+  previousBouquetsButton.disabled = true;
+  nextBouquetsButton.disabled = true;
 
   try {
     const { data } = await axios.get(API_URL, {
@@ -76,23 +73,18 @@ async function loadBouquets(reset = false) {
     state.total = data.total;
     data.items.forEach(product => products.set(String(product.id), product));
     bouquetList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
-    state.page += 1;
-
-    const loaded = bouquetList.querySelectorAll('.product-card').length;
-    const hasMore = loaded < state.total;
-    loadMoreButton.hidden = !hasMore;
-    loadMoreButton.disabled = !hasMore;
-    loadMoreButton.textContent = hasMore ? 'View more' : 'All bouquets are shown';
+    previousBouquetsButton.disabled = state.page === 1;
+    nextBouquetsButton.disabled = state.page * state.limit >= state.total;
   } catch (error) {
     bouquetList.innerHTML = '<li>Unable to load bouquets. Please try again later.</li>';
-    loadMoreButton.hidden = true;
   }
 }
 
 openMenuButton.addEventListener('click', toggleMenu);
 closeMenuButton.addEventListener('click', toggleMenu);
 mobileMenuLinks.forEach(link => link.addEventListener('click', toggleMenu));
-loadMoreButton.addEventListener('click', () => loadBouquets());
+previousBouquetsButton.addEventListener('click', () => { state.page -= 1; loadBouquets(); });
+nextBouquetsButton.addEventListener('click', () => { state.page += 1; loadBouquets(); });
 orderOpenButtons.forEach(button => button.addEventListener('click', () => {
   if (mobileMenu.classList.contains('is-open')) toggleMenu();
   toggleOrderModal();
@@ -113,4 +105,4 @@ productModal.addEventListener('click', event => { if (event.target === productMo
 productBuyButton.addEventListener('click', () => { toggleProductModal(); toggleOrderModal(); });
 
 loadFeatured();
-loadBouquets(true);
+loadBouquets();

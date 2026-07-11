@@ -400,6 +400,11 @@ h3 {
   margin-left: auto;
 }
 
+.catalog-controls { display: flex; justify-content: center; gap: 12px; }
+.slider-button { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--color-border); border-radius: 50%; background-color: var(--color-white); font-size: 20px; transition: background-color var(--transition), color var(--transition); }
+.slider-button:hover, .slider-button:focus { background-color: var(--color-primary); }
+.slider-button:disabled { opacity: 0.35; cursor: not-allowed; }
+
 .product-card p,
 .review-card p {
   margin-bottom: 0;
