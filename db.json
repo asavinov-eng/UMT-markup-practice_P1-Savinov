@@ -1,0 +1,15 @@
+{
+  "products": [
+    { "id": 1, "name": "Blush Bloom", "price": 45, "category": "bestseller", "image": "./images/products/top-selling-1.jpg", "alt": "Pink bouquet with ribbons" },
+    { "id": 2, "name": "Rose Garden", "price": 52, "category": "bestseller", "image": "./images/products/top-selling-2.jpg", "alt": "Pink and burgundy bouquet with ribbons" },
+    { "id": 3, "name": "Violet Dream", "price": 48, "category": "bestseller", "image": "./images/products/top-selling-3.jpg", "alt": "Purple and pink bouquet in a vase" },
+    { "id": 4, "name": "Spring Elegance", "price": 45, "category": "bouquet", "image": "./images/products/bouquet-1.jpg", "alt": "Colourful bouquet in a wooden box" },
+    { "id": 5, "name": "Pink Romance", "price": 50, "category": "bouquet", "image": "./images/products/bouquet-2.jpg", "alt": "Pink flowers in a wicker basket" },
+    { "id": 6, "name": "Violet Evening", "price": 42, "category": "bouquet", "image": "./images/products/bouquet-3.jpg", "alt": "Pink bouquet against a dark background" },
+    { "id": 7, "name": "Wildflower Charm", "price": 46, "category": "bouquet", "image": "./images/products/bouquet-4.jpg", "alt": "Burgundy and cream rose bouquet" },
+    { "id": 8, "name": "Summer Meadow", "price": 55, "category": "bouquet", "image": "./images/products/bouquet-5.jpg", "alt": "Bright wildflower bouquet" },
+    { "id": 9, "name": "Lavender Dream", "price": 44, "category": "bouquet", "image": "./images/products/bouquet-6.jpg", "alt": "Lavender rose bouquet in a basket" },
+    { "id": 10, "name": "Blush Bloom", "price": 48, "category": "bouquet", "image": "./images/products/bouquet-7.jpg", "alt": "Florist arranging a pink bouquet" },
+    { "id": 11, "name": "Garden Basket", "price": 49, "category": "bouquet", "image": "./images/products/bouquet-8.jpg", "alt": "Bouquet in a woven basket" }
+  ]
+}
