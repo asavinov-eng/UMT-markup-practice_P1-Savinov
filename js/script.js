@@ -7,6 +7,15 @@ const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
 const featuredList = document.querySelector('.top-selling .product-list');
 const bouquetList = document.querySelector('.bouquets .product-list');
 const loadMoreButton = document.querySelector('.bouquets .button');
+const orderModal = document.querySelector('[data-order-modal]');
+const orderOpenButtons = document.querySelectorAll('[data-order-open]');
+const orderCloseButton = document.querySelector('[data-order-close]');
+const orderForm = document.querySelector('[data-order-form]');
+const formMessage = document.querySelector('[data-form-message]');
+const productModal = document.querySelector('[data-product-modal]');
+const productCloseButton = document.querySelector('[data-product-close]');
+const productBuyButton = document.querySelector('[data-product-buy]');
+const products = new Map();
 
 const state = { page: 1, limit: 4, total: 0 };
 
@@ -16,19 +25,35 @@ function toggleMenu() {
   document.body.style.overflow = isOpen ? 'hidden' : '';
 }
 
+function toggleOrderModal() {
+  const isOpen = orderModal.classList.toggle('is-open');
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+
 function createProductMarkup(product) {
   return `
-    <li class="product-card">
+    <li class="product-card" data-product-id="${product.id}">
       <img class="product-image" src="${product.photoURL}" width="1280" alt="${product.description}" />
       <h3>${product.title}</h3>
       <p>$${Number(product.price).toFixed(0)}</p>
     </li>`;
 }
 
+function toggleProductModal() { const isOpen = productModal.classList.toggle('is-open'); document.body.style.overflow = isOpen ? 'hidden' : ''; }
+function showProduct(product) {
+  productModal.querySelector('[data-product-image]').src = product.photoURL;
+  productModal.querySelector('[data-product-image]').alt = product.description;
+  productModal.querySelector('[data-product-title]').textContent = product.title;
+  productModal.querySelector('[data-product-price]').textContent = `$${Number(product.price).toFixed(0)}`;
+  productModal.querySelector('[data-product-description]').textContent = product.description;
+  toggleProductModal();
+}
+
 async function loadFeatured() {
   try {
     const { data } = await axios.get(API_URL, { params: { favorite: true, limit: 3 } });
     featuredList.innerHTML = '';
+    data.items.forEach(product => products.set(String(product.id), product));
     featuredList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
   } catch (error) {
     featuredList.innerHTML = '<li>Unable to load bouquets. Please try again later.</li>';
@@ -49,6 +74,7 @@ async function loadBouquets(reset = false) {
       params: { page: state.page, limit: state.limit, favorite: false },
     });
     state.total = data.total;
+    data.items.forEach(product => products.set(String(product.id), product));
     bouquetList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
     state.page += 1;
 
@@ -67,6 +93,24 @@ openMenuButton.addEventListener('click', toggleMenu);
 closeMenuButton.addEventListener('click', toggleMenu);
 mobileMenuLinks.forEach(link => link.addEventListener('click', toggleMenu));
 loadMoreButton.addEventListener('click', () => loadBouquets());
+orderOpenButtons.forEach(button => button.addEventListener('click', () => {
+  if (mobileMenu.classList.contains('is-open')) toggleMenu();
+  toggleOrderModal();
+}));
+orderCloseButton.addEventListener('click', toggleOrderModal);
+orderModal.addEventListener('click', event => { if (event.target === orderModal) toggleOrderModal(); });
+orderForm.addEventListener('submit', event => {
+  event.preventDefault();
+  formMessage.textContent = 'Thank you! Your order request has been sent.';
+  orderForm.reset();
+});
+document.addEventListener('click', event => {
+  const card = event.target.closest('.product-card');
+  if (card && products.has(card.dataset.productId)) showProduct(products.get(card.dataset.productId));
+});
+productCloseButton.addEventListener('click', toggleProductModal);
+productModal.addEventListener('click', event => { if (event.target === productModal) toggleProductModal(); });
+productBuyButton.addEventListener('click', () => { toggleProductModal(); toggleOrderModal(); });
 
 loadFeatured();
 loadBouquets(true);

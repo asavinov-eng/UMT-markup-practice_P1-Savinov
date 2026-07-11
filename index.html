@@ -52,7 +52,7 @@
         >
           <svg class="menu-icon" width="24" height="24" aria-hidden="true"><use href="./images/icons.svg#icon-menu"></use></svg>
         </button>
-        <a class="header-button button" href="#bouquets">Explore Bouquets</a>
+        <button class="header-button button" type="button" data-order-open>Explore Bouquets</button>
       </div>
     </header>
 
@@ -71,7 +71,7 @@
           <li><a href="#reviews">Feedback</a></li>
           <li><a href="#contacts">Contacts</a></li>
         </ul>
-        <a class="button mobile-menu-button" href="#bouquets">Explore Bouquets</a>
+        <button class="button mobile-menu-button" type="button" data-order-open>Explore Bouquets</button>
       </div>
     </div>
 
@@ -85,7 +85,7 @@
               bouquet. Our expertly crafted arrangements are designed to bring
               joy and elegance to your celebrations.
             </p>
-            <a class="button" href="#top-selling">Explore Our Bestsellers</a>
+            <button class="button" type="button" data-order-open>Explore Our Bestsellers</button>
           </div>
           <img
             class="hero-image"
@@ -265,6 +265,35 @@
         </div>
       </section>
     </main>
+
+    <div class="backdrop" data-order-modal>
+      <div class="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-title">
+        <button class="modal-close" type="button" aria-label="Close order form" data-order-close>×</button>
+        <h2 id="order-title">Order</h2>
+        <form class="order-form" data-order-form>
+          <label class="form-field">Name*<input type="text" name="name" placeholder="Ann" required /></label>
+          <label class="form-field">Phone*<input type="tel" name="phone" placeholder="+1 (555) 123-4567" required /></label>
+          <label class="form-field">Address*<input type="text" name="address" placeholder="456 Floral Ave, Sydney NSW 2000 AU" required /></label>
+          <label class="form-field">Message<textarea name="message" placeholder="Type your message..."></textarea></label>
+          <label class="terms-label"><input class="terms-input" type="checkbox" name="terms" required /><span class="terms-box">✓</span>I agree to the terms and conditions.</label>
+          <button class="button" type="submit">Go to Checkout</button>
+          <p class="form-message" data-form-message></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="backdrop" data-product-modal>
+      <div class="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-title">
+        <button class="modal-close" type="button" aria-label="Close product details" data-product-close>×</button>
+        <img class="product-modal-image" data-product-image src="" alt="" />
+        <div class="product-modal-content">
+          <h2 id="product-title" data-product-title></h2>
+          <p class="product-modal-price" data-product-price></p>
+          <p data-product-description></p>
+          <div class="product-modal-actions"><button class="button" type="button" data-product-buy>Buy now</button><input type="number" min="1" value="1" aria-label="Quantity" /></div>
+        </div>
+      </div>
+    </div>
 
     <footer class="footer">
       <div class="container footer-container">
