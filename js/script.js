@@ -6,8 +6,9 @@ const mobileMenu = document.querySelector('[data-menu]');
 const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
 const featuredList = document.querySelector('.top-selling .product-list');
 const bouquetList = document.querySelector('.bouquets .product-list');
-const previousBouquetsButton = document.querySelector('[data-bouquet-prev]');
-const nextBouquetsButton = document.querySelector('[data-bouquet-next]');
+const loadMoreButton = document.querySelector('[data-load-more]');
+const previousFeaturedButton = document.querySelector('[data-featured-prev]');
+const nextFeaturedButton = document.querySelector('[data-featured-next]');
 const orderModal = document.querySelector('[data-order-modal]');
 const orderOpenButtons = document.querySelectorAll('[data-order-open]');
 const orderCloseButton = document.querySelector('[data-order-close]');
@@ -18,7 +19,8 @@ const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
 const products = new Map();
 
-const state = { page: 1, limit: 3, total: 0 };
+const state = { page: 1, limit: 4, total: 0 };
+const featuredState = { page: 1, limit: 3, total: 0 };
 
 function toggleMenu() {
   const isOpen = mobileMenu.classList.toggle('is-open');
@@ -52,19 +54,25 @@ function showProduct(product) {
 
 async function loadFeatured() {
   try {
-    const { data } = await axios.get(API_URL, { params: { favorite: true, limit: 3 } });
+    const { data } = await axios.get(API_URL, { params: { page: featuredState.page, limit: featuredState.limit } });
     featuredList.innerHTML = '';
     data.items.forEach(product => products.set(String(product.id), product));
     featuredList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
+    featuredState.total = data.total;
+    previousFeaturedButton.disabled = featuredState.page === 1;
+    nextFeaturedButton.disabled = featuredState.page * featuredState.limit >= featuredState.total;
   } catch (error) {
     featuredList.innerHTML = '<li>Unable to load bouquets. Please try again later.</li>';
   }
 }
 
-async function loadBouquets() {
-  bouquetList.innerHTML = '';
-  previousBouquetsButton.disabled = true;
-  nextBouquetsButton.disabled = true;
+async function loadBouquets(reset = false) {
+  if (reset) {
+    state.page = 1;
+    bouquetList.innerHTML = '';
+  }
+  loadMoreButton.disabled = true;
+  loadMoreButton.textContent = 'Loading...';
 
   try {
     const { data } = await axios.get(API_URL, {
@@ -73,18 +81,24 @@ async function loadBouquets() {
     state.total = data.total;
     data.items.forEach(product => products.set(String(product.id), product));
     bouquetList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
-    previousBouquetsButton.disabled = state.page === 1;
-    nextBouquetsButton.disabled = state.page * state.limit >= state.total;
+    state.page += 1;
+    const loaded = bouquetList.querySelectorAll('.product-card').length;
+    const hasMore = loaded < state.total;
+    loadMoreButton.hidden = !hasMore;
+    loadMoreButton.disabled = !hasMore;
+    loadMoreButton.textContent = 'Show more';
   } catch (error) {
     bouquetList.innerHTML = '<li>Unable to load bouquets. Please try again later.</li>';
+    loadMoreButton.hidden = true;
   }
 }
 
 openMenuButton.addEventListener('click', toggleMenu);
 closeMenuButton.addEventListener('click', toggleMenu);
 mobileMenuLinks.forEach(link => link.addEventListener('click', toggleMenu));
-previousBouquetsButton.addEventListener('click', () => { state.page -= 1; loadBouquets(); });
-nextBouquetsButton.addEventListener('click', () => { state.page += 1; loadBouquets(); });
+loadMoreButton.addEventListener('click', () => loadBouquets());
+previousFeaturedButton.addEventListener('click', () => { featuredState.page -= 1; loadFeatured(); });
+nextFeaturedButton.addEventListener('click', () => { featuredState.page += 1; loadFeatured(); });
 orderOpenButtons.forEach(button => button.addEventListener('click', () => {
   if (mobileMenu.classList.contains('is-open')) toggleMenu();
   toggleOrderModal();
@@ -105,4 +119,4 @@ productModal.addEventListener('click', event => { if (event.target === productMo
 productBuyButton.addEventListener('click', () => { toggleProductModal(); toggleOrderModal(); });
 
 loadFeatured();
-loadBouquets();
+loadBouquets(true);
