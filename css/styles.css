@@ -321,6 +321,13 @@ h3 {
   color: var(--color-muted);
 }
 
+.about-decor {
+  display: block;
+  width: 64px;
+  height: auto;
+  margin-bottom: 16px;
+}
+
 .about-image-wrapper {
   margin-top: 32px;
   overflow: hidden;
