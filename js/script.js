@@ -17,7 +17,11 @@ const formMessage = document.querySelector('[data-form-message]');
 const productModal = document.querySelector('[data-product-modal]');
 const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
+const reviewCards = [...document.querySelectorAll('.review-card')];
+const previousReviewsButton = document.querySelector('[data-reviews-prev]');
+const nextReviewsButton = document.querySelector('[data-reviews-next]');
 const products = new Map();
+let reviewsPage = 0;
 
 const state = { page: 1, limit: 4, total: 0 };
 const featuredState = { page: 1, limit: 3, total: 0 };
@@ -50,6 +54,14 @@ function showProduct(product) {
   productModal.querySelector('[data-product-price]').textContent = `$${Number(product.price).toFixed(0)}`;
   productModal.querySelector('[data-product-description]').textContent = product.description;
   toggleProductModal();
+}
+
+function showReviews() {
+  reviewCards.forEach((card, index) => {
+    card.hidden = index < reviewsPage * 3 || index >= reviewsPage * 3 + 3;
+  });
+  previousReviewsButton.disabled = reviewsPage === 0;
+  nextReviewsButton.disabled = (reviewsPage + 1) * 3 >= reviewCards.length;
 }
 
 async function loadFeatured() {
@@ -117,6 +129,9 @@ document.addEventListener('click', event => {
 productCloseButton.addEventListener('click', toggleProductModal);
 productModal.addEventListener('click', event => { if (event.target === productModal) toggleProductModal(); });
 productBuyButton.addEventListener('click', () => { toggleProductModal(); toggleOrderModal(); });
+previousReviewsButton.addEventListener('click', () => { reviewsPage -= 1; showReviews(); });
+nextReviewsButton.addEventListener('click', () => { reviewsPage += 1; showReviews(); });
 
 loadFeatured();
 loadBouquets(true);
+showReviews();

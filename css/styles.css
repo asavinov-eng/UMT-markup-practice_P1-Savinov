@@ -375,6 +375,14 @@ h3 {
   border-radius: 0;
 }
 
+.review-card[hidden] {
+  display: none;
+}
+
+.reviews-controls {
+  justify-content: flex-end;
+}
+
 .product-card {
   overflow: hidden;
   padding: 0 0 20px;
