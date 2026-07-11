@@ -132,6 +132,12 @@ h3 {
   letter-spacing: -0.08em;
 }
 
+.logo img {
+  display: block;
+  width: 96px;
+  height: auto;
+}
+
 .navigation {
   display: none;
 }
