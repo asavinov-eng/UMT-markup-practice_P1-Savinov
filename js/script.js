@@ -19,13 +19,13 @@ const reviewList = document.querySelector('.review-list');
 const productModal = document.querySelector('[data-product-modal]');
 const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
-const reviewCards = [...document.querySelectorAll('.review-card')];
 const previousReviewsButton = document.querySelector('[data-reviews-prev]');
 const nextReviewsButton = document.querySelector('[data-reviews-next]');
 const products = new Map();
 let searchTimeout;
 let bouquetsRequestId = 0;
 let reviewsPage = 0;
+let feedbackItems = [];
 
 const state = { page: 1, limit: 4, total: 0, search: '' };
 const featuredState = { page: 1, limit: 3, total: 0 };
@@ -61,11 +61,10 @@ function showProduct(product) {
 }
 
 function showReviews() {
-  reviewCards.forEach((card, index) => {
-    card.hidden = index < reviewsPage * 3 || index >= reviewsPage * 3 + 3;
-  });
+  const currentItems = feedbackItems.slice(reviewsPage * 3, reviewsPage * 3 + 3);
+  reviewList.innerHTML = currentItems.map(item => `<li class="review-card"><blockquote>“${item.text}”</blockquote><p class="review-author">${item.author}</p></li>`).join('');
   previousReviewsButton.disabled = reviewsPage === 0;
-  nextReviewsButton.disabled = (reviewsPage + 1) * 3 >= reviewCards.length;
+  nextReviewsButton.disabled = (reviewsPage + 1) * 3 >= feedbackItems.length;
 }
 
 async function loadFeatured() {
@@ -155,5 +154,7 @@ showReviews();
 
 axios.get('https://flora-backend-983x.onrender.com/api/feedbacks').then(({ data }) => {
   if (!data.length) return;
-  reviewList.innerHTML = data.map(item => `<li class="review-card"><blockquote>“${item.text}”</blockquote><p class="review-author">${item.author}</p></li>`).join('');
+  feedbackItems = data;
+  reviewsPage = 0;
+  showReviews();
 }).catch(() => {});
