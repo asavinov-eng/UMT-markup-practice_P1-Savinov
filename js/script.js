@@ -166,7 +166,7 @@ feedbackForm.addEventListener('submit', async event => {
     feedbackMessage.textContent = 'Thank you for your feedback!';
     await loadFeedbacks();
   } catch (error) {
-    feedbackMessage.textContent = 'Unable to send feedback. Please try again.';
+    feedbackMessage.textContent = 'Your feedback must contain at least 5 characters.';
   }
 });
 
