@@ -22,6 +22,8 @@ const reviewCards = [...document.querySelectorAll('.review-card')];
 const previousReviewsButton = document.querySelector('[data-reviews-prev]');
 const nextReviewsButton = document.querySelector('[data-reviews-next]');
 const products = new Map();
+let searchTimeout;
+let bouquetsRequestId = 0;
 let reviewsPage = 0;
 
 const state = { page: 1, limit: 4, total: 0, search: '' };
@@ -86,11 +88,13 @@ async function loadBouquets(reset = false) {
   }
   loadMoreButton.disabled = true;
   loadMoreButton.textContent = 'Loading...';
+  const requestId = ++bouquetsRequestId;
 
   try {
     const { data } = await axios.get(API_URL, {
       params: { page: state.page, limit: state.limit, favorite: false, search: state.search },
     });
+    if (requestId !== bouquetsRequestId) return;
     state.total = data.total;
     data.items.forEach(product => products.set(String(product.id), product));
     bouquetList.insertAdjacentHTML('beforeend', data.items.map(createProductMarkup).join(''));
@@ -101,6 +105,7 @@ async function loadBouquets(reset = false) {
     loadMoreButton.disabled = !hasMore;
     loadMoreButton.textContent = 'Show more';
   } catch (error) {
+    if (requestId !== bouquetsRequestId) return;
     bouquetList.innerHTML = '<li>Unable to load bouquets. Please try again later.</li>';
     loadMoreButton.hidden = true;
   }
@@ -112,7 +117,13 @@ mobileMenuLinks.forEach(link => link.addEventListener('click', toggleMenu));
 loadMoreButton.addEventListener('click', () => loadBouquets());
 previousFeaturedButton.addEventListener('click', () => { featuredState.page -= 1; loadFeatured(); });
 nextFeaturedButton.addEventListener('click', () => { featuredState.page += 1; loadFeatured(); });
-bouquetSearchInput.addEventListener('input', event => { state.search = event.target.value.trim(); loadBouquets(true); });
+bouquetSearchInput.addEventListener('input', event => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    state.search = event.target.value.trim();
+    loadBouquets(true);
+  }, 350);
+});
 orderOpenButtons.forEach(button => button.addEventListener('click', () => {
   if (mobileMenu.classList.contains('is-open')) toggleMenu();
   toggleOrderModal();
