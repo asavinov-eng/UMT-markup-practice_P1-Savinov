@@ -397,6 +397,10 @@ h3 {
   justify-content: flex-end;
 }
 
+.feedback-form { display: grid; max-width: 560px; gap: 14px; margin: 40px auto 0; }
+.feedback-form textarea { min-height: 100px; }
+.feedback-form .button { justify-self: center; }
+
 .product-card {
   overflow: hidden;
   padding: 0 0 20px;

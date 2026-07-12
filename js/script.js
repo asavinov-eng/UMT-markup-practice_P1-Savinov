@@ -21,6 +21,8 @@ const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
 const previousReviewsButton = document.querySelector('[data-reviews-prev]');
 const nextReviewsButton = document.querySelector('[data-reviews-next]');
+const feedbackForm = document.querySelector('[data-feedback-form]');
+const feedbackMessage = document.querySelector('[data-feedback-message]');
 const products = new Map();
 let searchTimeout;
 let bouquetsRequestId = 0;
@@ -65,6 +67,15 @@ function showReviews() {
   reviewList.innerHTML = currentItems.map(item => `<li class="review-card"><blockquote>“${item.text}”</blockquote><p class="review-author">${item.author}</p></li>`).join('');
   previousReviewsButton.disabled = reviewsPage === 0;
   nextReviewsButton.disabled = (reviewsPage + 1) * 3 >= feedbackItems.length;
+}
+
+async function loadFeedbacks() {
+  try {
+    const { data } = await axios.get('https://flora-backend-983x.onrender.com/api/feedbacks');
+    feedbackItems = data;
+    reviewsPage = 0;
+    showReviews();
+  } catch (error) {}
 }
 
 async function loadFeatured() {
@@ -147,14 +158,20 @@ productModal.addEventListener('click', event => { if (event.target === productMo
 productBuyButton.addEventListener('click', () => { toggleProductModal(); toggleOrderModal(); });
 previousReviewsButton.addEventListener('click', () => { reviewsPage -= 1; showReviews(); });
 nextReviewsButton.addEventListener('click', () => { reviewsPage += 1; showReviews(); });
+feedbackForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  try {
+    await axios.post('https://flora-backend-983x.onrender.com/api/feedbacks', Object.fromEntries(new FormData(feedbackForm)));
+    feedbackForm.reset();
+    feedbackMessage.textContent = 'Thank you for your feedback!';
+    await loadFeedbacks();
+  } catch (error) {
+    feedbackMessage.textContent = 'Unable to send feedback. Please try again.';
+  }
+});
 
 loadFeatured();
 loadBouquets(true);
 showReviews();
 
-axios.get('https://flora-backend-983x.onrender.com/api/feedbacks').then(({ data }) => {
-  if (!data.length) return;
-  feedbackItems = data;
-  reviewsPage = 0;
-  showReviews();
-}).catch(() => {});
+loadFeedbacks();
