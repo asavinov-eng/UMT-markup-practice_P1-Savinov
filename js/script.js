@@ -9,6 +9,7 @@ const bouquetList = document.querySelector('.bouquets .product-list');
 const loadMoreButton = document.querySelector('[data-load-more]');
 const previousFeaturedButton = document.querySelector('[data-featured-prev]');
 const nextFeaturedButton = document.querySelector('[data-featured-next]');
+const bouquetSearchInput = document.querySelector('[data-bouquet-search]');
 const orderModal = document.querySelector('[data-order-modal]');
 const orderOpenButtons = document.querySelectorAll('[data-order-open]');
 const orderCloseButton = document.querySelector('[data-order-close]');
@@ -23,7 +24,7 @@ const nextReviewsButton = document.querySelector('[data-reviews-next]');
 const products = new Map();
 let reviewsPage = 0;
 
-const state = { page: 1, limit: 4, total: 0 };
+const state = { page: 1, limit: 4, total: 0, search: '' };
 const featuredState = { page: 1, limit: 3, total: 0 };
 
 function toggleMenu() {
@@ -88,7 +89,7 @@ async function loadBouquets(reset = false) {
 
   try {
     const { data } = await axios.get(API_URL, {
-      params: { page: state.page, limit: state.limit, favorite: false },
+      params: { page: state.page, limit: state.limit, favorite: false, search: state.search },
     });
     state.total = data.total;
     data.items.forEach(product => products.set(String(product.id), product));
@@ -111,6 +112,7 @@ mobileMenuLinks.forEach(link => link.addEventListener('click', toggleMenu));
 loadMoreButton.addEventListener('click', () => loadBouquets());
 previousFeaturedButton.addEventListener('click', () => { featuredState.page -= 1; loadFeatured(); });
 nextFeaturedButton.addEventListener('click', () => { featuredState.page += 1; loadFeatured(); });
+bouquetSearchInput.addEventListener('input', event => { state.search = event.target.value.trim(); loadBouquets(true); });
 orderOpenButtons.forEach(button => button.addEventListener('click', () => {
   if (mobileMenu.classList.contains('is-open')) toggleMenu();
   toggleOrderModal();
