@@ -134,6 +134,7 @@ orderModal.addEventListener('click', event => { if (event.target === orderModal)
 orderForm.addEventListener('submit', event => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(orderForm));
+  delete data.terms;
   axios.post('https://flora-backend-983x.onrender.com/api/orders', data)
     .then(() => { formMessage.textContent = 'Thank you! Your order request has been sent.'; orderForm.reset(); })
     .catch(() => { formMessage.textContent = 'Unable to send order. Please try again.'; });
