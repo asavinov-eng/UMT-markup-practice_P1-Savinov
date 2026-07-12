@@ -420,6 +420,10 @@ h3 {
   margin-left: auto;
 }
 
+.bouquets .button[hidden] {
+  display: none;
+}
+
 .catalog-search { display: grid; max-width: 360px; gap: 6px; margin-bottom: 24px; font-size: 13px; font-weight: 600; }
 .catalog-search input { padding: 11px 12px; border: 1px solid var(--color-border); border-radius: 10px; font: inherit; }
 
