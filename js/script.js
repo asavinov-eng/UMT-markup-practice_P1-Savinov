@@ -54,8 +54,10 @@ function createProductMarkup(product) {
 
 function toggleProductModal() { const isOpen = productModal.classList.toggle('is-open'); document.body.style.overflow = isOpen ? 'hidden' : ''; }
 function showProduct(product) {
-  productModal.querySelector('[data-product-image]').src = product.photoURL;
-  productModal.querySelector('[data-product-image]').alt = product.description;
+  const productImage = productModal.querySelector('[data-product-image]');
+  productImage.src = product.photoURL;
+  productImage.srcset = `${product.photoURL} 1x, ${product.photoURL.replace('.jpg', '@2x.jpg')} 2x`;
+  productImage.alt = product.description;
   productModal.querySelector('[data-product-title]').textContent = product.title;
   productModal.querySelector('[data-product-price]').textContent = `$${Number(product.price).toFixed(0)}`;
   productModal.querySelector('[data-product-description]').textContent = product.description;
@@ -64,7 +66,7 @@ function showProduct(product) {
 
 function showReviews() {
   const currentItems = feedbackItems.slice(reviewsPage * 3, reviewsPage * 3 + 3);
-  reviewList.innerHTML = currentItems.map(item => `<li class="review-card"><blockquote>“${item.text}”</blockquote><p class="review-author">${item.author}</p></li>`).join('');
+  reviewList.innerHTML = currentItems.map(item => `<li class="review-card"><blockquote>&ldquo;${item.text}&rdquo;</blockquote><p class="review-author">${item.author}</p></li>`).join('');
   previousReviewsButton.disabled = reviewsPage === 0;
   nextReviewsButton.disabled = (reviewsPage + 1) * 3 >= feedbackItems.length;
 }
