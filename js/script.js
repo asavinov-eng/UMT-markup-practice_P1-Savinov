@@ -15,6 +15,7 @@ const orderOpenButtons = document.querySelectorAll('[data-order-open]');
 const orderCloseButton = document.querySelector('[data-order-close]');
 const orderForm = document.querySelector('[data-order-form]');
 const formMessage = document.querySelector('[data-form-message]');
+const reviewList = document.querySelector('.review-list');
 const productModal = document.querySelector('[data-product-modal]');
 const productCloseButton = document.querySelector('[data-product-close]');
 const productBuyButton = document.querySelector('[data-product-buy]');
@@ -132,8 +133,10 @@ orderCloseButton.addEventListener('click', toggleOrderModal);
 orderModal.addEventListener('click', event => { if (event.target === orderModal) toggleOrderModal(); });
 orderForm.addEventListener('submit', event => {
   event.preventDefault();
-  formMessage.textContent = 'Thank you! Your order request has been sent.';
-  orderForm.reset();
+  const data = Object.fromEntries(new FormData(orderForm));
+  axios.post('https://flora-backend-983x.onrender.com/api/orders', data)
+    .then(() => { formMessage.textContent = 'Thank you! Your order request has been sent.'; orderForm.reset(); })
+    .catch(() => { formMessage.textContent = 'Unable to send order. Please try again.'; });
 });
 document.addEventListener('click', event => {
   const card = event.target.closest('.product-card');
@@ -148,3 +151,8 @@ nextReviewsButton.addEventListener('click', () => { reviewsPage += 1; showReview
 loadFeatured();
 loadBouquets(true);
 showReviews();
+
+axios.get('https://flora-backend-983x.onrender.com/api/feedbacks').then(({ data }) => {
+  if (!data.length) return;
+  reviewList.innerHTML = data.map(item => `<li class="review-card"><blockquote>“${item.text}”</blockquote><p class="review-author">${item.author}</p></li>`).join('');
+}).catch(() => {});
