@@ -44,7 +44,7 @@ function toggleOrderModal() {
 function createProductMarkup(product) {
   return `
     <li class="product-card" data-product-id="${product.id}">
-      <img class="product-image" src="${product.photoURL}" width="1280" alt="${product.description}" />
+      <img class="product-image" src="${product.photoURL}" srcset="${product.photoURL} 1x, ${product.photoURL.replace('.jpg', '@2x.jpg')} 2x" width="1280" alt="${product.description}" />
       <h3>${product.title}</h3>
       <p>$${Number(product.price).toFixed(0)}</p>
     </li>`;
